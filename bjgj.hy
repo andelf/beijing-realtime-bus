@@ -4,10 +4,7 @@
 ;;; Created     : Wed Oct 22 20:51:12 2014 by ShuYu Wang
 ;;; Copyright   : Feather Workshop (c) 2014
 ;;; Description : Beijing Realtime Bus
-;;; Time-stamp: <2014-10-22 20:55:57 andelf>
-
-
-
+;;; Time-stamp: <2014-10-22 21:00:13 andelf>
 
 (import urllib2
         hashlib
@@ -87,7 +84,6 @@
 
 
 (defclass BeijingBusApi [object]
-  "realtime bus client"
   [[--init--
     (fn [self]
       (setv self.opener (urllib2.build_opener))
@@ -96,7 +92,8 @@
             [(, "SOURCE" "1") (, "PKG_SOURCE" "1") (, "OS" "android") (, "ROM"  "4.2.1")
              (, "RESOLUTION" "1280*720") (, "MANUFACTURER" "2013022") (, "MODEL" "2013022")
              (, "UA" "2013022,17,4.2.1,HBJ2.0,Unknown,1280*720")
-             (, "IMSI" "460026012349015") (, "IMEI" "860671021376790")
+             (, "IMSI" "233333333333333")
+             (, "IMEI" "233333333333333")
              (, "UID" self.uid) (, "CID" self.uid)
              (, "PRODUCT" "nextbus") (, "PLATFORM" "android")
              (, "VERSION" "1.0.5") (, "FIRST_VERSION" "2")
@@ -107,14 +104,14 @@
       (-> (+ url-base path) (self.opener.open) (.read)))]
    ;; <line><id>621</id><status>0</status><version>16</version></line
    [check-update
-    "fetch new line id and version"
+    ;; "fetch new line id and version"
     ;; {'status': '0', 'version': '3', 'id': '141'}
     (fn [self]
       (-> (self.api-open "/aiguang/bjgj.c?m=checkUpdate&version=2")
           (ET.fromstring)
           (etree-xpath-children-to-dict-list "//line")))]
    [get-busline-info
-    "fetch busline detail info. name, stations, locations."
+    ;; "fetch busline detail info. name, stations, locations."
     (fn [self id &rest ids]
       (->> (+ [id] (list ids))
            (map str)
@@ -126,7 +123,7 @@
            (map decrypt-busline-info)
            (list)))]
    [get-busline-realtime-info
-    "realtime bus location lookup. busline-id station-no"
+    ;; "realtime bus location lookup. busline-id station-no"
     (fn [self id no]
       (list (ap-map (decrypt-bus-realtime-info it)
                     (-> (.format "/bus.php?city=%E5%8C%97%E4%BA%AC&id={0}&no={1}&type={2}&encrypt={3}&versionid=2"
