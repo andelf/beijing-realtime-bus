@@ -1,5 +1,13 @@
 #!/usr/bin/env hy
-;;;
+;;; FileName    : bjgj.hy
+;;; Author      : ShuYu Wang <andelf@gmail.com>
+;;; Created     : Wed Oct 22 20:51:12 2014 by ShuYu Wang
+;;; Copyright   : Feather Workshop (c) 2014
+;;; Description : Beijing Realtime Bus
+;;; Time-stamp: <2014-10-22 20:55:57 andelf>
+
+
+
 
 (import urllib2
         hashlib
