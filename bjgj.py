@@ -56,27 +56,32 @@ class Cipher(object):
     def encrypt(self, plain_text):
         return self.translate(plain_text).encode(u'base64')
 
-def decrypt_busline_info(busline):
+def decrypt_busline_etree(et):
 
-    def _hy_anon_fn_9():
+    def _hy_anon_fn_10():
+        busline = xpath_etree_children_to_dict_list(u'//busline', et)[0L]
+        stations = xpath_etree_children_to_dict_list(u'//busline/stations/station', et)
         cipher = Cipher.new_from_key(busline[u'lineid'])
-        return dict(*[busline], **{k: cipher.decrypt(v).decode(u'utf-8') for (k, v) in busline.items() if (k in [u'shotname', u'coord', u'linename'])})
-    return _hy_anon_fn_9()
+        busline = dict(*[busline], **{k: cipher.decrypt(v).decode(u'utf-8') for (k, v) in busline.items() if (k in [u'shotname', u'coord', u'linename'])})
+
+        def _hy_anon_fn_9():
+            f_1236 = (lambda it: {k: cipher.decrypt(v).decode(u'utf-8', u'ignore') for (k, v) in it.items()})
+            for v_1235 in stations:
+                yield f_1236(v_1235)
+        stations = list(_hy_anon_fn_9())
+        busline[u'stations'] = stations
+        return busline
+    return _hy_anon_fn_10()
 
 def decrypt_bus_realtime_info(bus):
 
-    def _hy_anon_fn_11():
+    def _hy_anon_fn_12():
         cipher = Cipher.new_from_key(bus[u'gt'])
         return dict(*[bus], **{k: cipher.decrypt(v).decode(u'utf-8') for (k, v) in bus.items() if (k in [u'ns', u'nsn', u'sd', u'srt', u'st', u'x', u'y'])})
-    return _hy_anon_fn_11()
+    return _hy_anon_fn_12()
 
 def etree_xpath_children_to_dict_list(et, path):
-
-    def _hy_anon_fn_13():
-        f_1236 = (lambda it: {elem.tag: elem.text for elem in it.getchildren()})
-        for v_1235 in et.xpath(path):
-            yield f_1236(v_1235)
-    return list(_hy_anon_fn_13())
+    return xpath_etree_children_to_dict_list(path, et)
 
 def xpath_etree_children_to_dict_list(path, et):
 
@@ -111,7 +116,8 @@ class BeijingBusApi(object):
         return list(_hy_anon_fn_19())
 
     def get_busline_info(self, id, *ids):
-        return list(map(decrypt_busline_info, xpath_etree_children_to_dict_list(u'//busline', ET.fromstring(self.api_open(u'/aiguang/bjgj.c?m=update&id={0}'.format(u'%2C'.join(map(str, ([id] + list(ids))))))))))
+        buslines = ET.fromstring(self.api_open(u'/aiguang/bjgj.c?m=update&id={0}'.format(u'%2C'.join(map(str, ([id] + list(ids))))))).xpath(u'//busline')
+        return list(map(decrypt_busline_etree, buslines))
 
     def get_busline_realtime_info(self, id, no):
 
@@ -122,7 +128,7 @@ class BeijingBusApi(object):
         return list(_hy_anon_fn_22())
 
 def inspect(thing):
-    print(u'DEBUG', thing)
+    print(u'DEBUG', repr(thing), thing)
     return thing
 
 def main(*args):
@@ -133,7 +139,7 @@ def main(*args):
         for v_1244 in inspect(b.check_update()):
             yield f_1245(v_1244)
     print(len(list(_hy_anon_fn_25())))
-    print(b.get_busline_info(457L, 273L))
+    print(b.get_busline_info(457L))
     print(Cipher.new_from_key(1413772960L).decrypt(u'ycCx9MhBlIC3XYEfN4ZZ'))
     print(b.get_busline_realtime_info(87L, 3L))
     return 0L
