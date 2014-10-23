@@ -4,7 +4,7 @@
 ;;; Created     : Wed Oct 22 20:51:12 2014 by ShuYu Wang
 ;;; Copyright   : Feather Workshop (c) 2014
 ;;; Description : Beijing Realtime Bus
-;;; Time-stamp: <2014-10-23 23:42:06 andelf>
+;;; Time-stamp: <2014-10-24 00:27:50 andelf>
 
 (import urllib2
         hashlib
@@ -61,11 +61,18 @@
           (self.translate)
           (.encode "base64")))]])
 
-(defn decrypt-busline-info [busline]
-  (let [[cipher (Cipher.new-from-key (get busline "lineid"))]]
-    (apply dict [busline] (dict-comp k (.decode (cipher.decrypt v) "utf-8")
-                                     [(, k v) (busline.items)]
-                                     (in k ["shotname" "coord" "linename"])))))
+(defn decrypt-busline-etree [et]
+  (let [[busline (get (xpath-etree-children-to-dict-list "//busline" et) 0)]
+        [stations (xpath-etree-children-to-dict-list "//busline/stations/station" et)]
+        [cipher (Cipher.new-from-key (get busline "lineid"))]]
+    (setv busline (apply dict [busline] (dict-comp k (.decode (cipher.decrypt v) "utf-8")
+                                                   [(, k v) (busline.items)]
+                                                   (in k ["shotname" "coord" "linename"]))))
+    (setv stations (list (ap-map (dict-comp k (.decode (cipher.decrypt v) "utf-8" "ignore")
+                                            [(, k v) (it.items)])
+                                 stations)))
+    (assoc busline "stations" stations)
+    busline))
 
 (defn decrypt-bus-realtime-info [bus]
   (let [[cipher (Cipher.new-from-key (get bus "gt"))]]
@@ -75,8 +82,7 @@
 
 
 (defn etree-xpath-children-to-dict-list [et path]
-  (list
-   (ap-map (dict-comp elem.tag elem.text [elem (.getchildren it)]) (et.xpath path))))
+  (xpath-etree-children-to-dict-list path et))
 
 (defn xpath-etree-children-to-dict-list [path et]
   (list
@@ -116,15 +122,14 @@
    [get-busline-info
     ;; "fetch busline detail info. name, stations, locations."
     (fn [self id &rest ids]
-      (->> (+ [id] (list ids))
-           (map str)
-           (.join "%2C")
-           (.format "/aiguang/bjgj.c?m=update&id={0}")
-           (self.api-open)
-           (ET.fromstring)
-           (xpath-etree-children-to-dict-list "//busline")
-           (map decrypt-busline-info)
-           (list)))]
+      (setv buslines (.xpath (->> (+ [id] (list ids))
+                                  (map str)
+                                  (.join "%2C")
+                                  (.format "/aiguang/bjgj.c?m=update&id={0}")
+                                  (self.api-open)
+                                  (ET.fromstring))
+                             "//busline"))
+      (list (map decrypt-busline-etree buslines)))]
    [get-busline-realtime-info
     ;; "realtime bus location lookup. busline-id station-no"
     (fn [self id no]
@@ -139,7 +144,7 @@
 
 
 (defn inspect [thing]
-  (print "DEBUG" thing)
+  (print "DEBUG" (repr thing) thing )
   thing)
 
 
@@ -150,7 +155,7 @@
       (list)
       (len)
       (print))
-  (-> (b.get-busline-info 457 273)
+  (-> (b.get-busline-info 457)
       (print))
   ;; test decrypt
   (-> (Cipher.new-from-key 1413772960)
