@@ -4,7 +4,7 @@
 ;;; Created     : Wed Oct 22 20:51:12 2014 by ShuYu Wang
 ;;; Copyright   : Feather Workshop (c) 2014
 ;;; Description : Beijing Realtime Bus
-;;; Time-stamp: <2014-10-22 21:00:13 andelf>
+;;; Time-stamp: <2014-10-23 22:54:12 andelf>
 
 (import urllib2
         hashlib
@@ -84,6 +84,7 @@
 
 
 (defclass BeijingBusApi [object]
+  "Beijing Realtime Bus API."
   [[--init--
     (fn [self]
       (setv self.opener (urllib2.build_opener))
