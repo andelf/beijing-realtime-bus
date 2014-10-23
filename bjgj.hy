@@ -4,7 +4,7 @@
 ;;; Created     : Wed Oct 22 20:51:12 2014 by ShuYu Wang
 ;;; Copyright   : Feather Workshop (c) 2014
 ;;; Description : Beijing Realtime Bus
-;;; Time-stamp: <2014-10-24 00:27:50 andelf>
+;;; Time-stamp: <2014-10-24 00:32:32 andelf>
 
 (import urllib2
         hashlib
@@ -68,7 +68,7 @@
     (setv busline (apply dict [busline] (dict-comp k (.decode (cipher.decrypt v) "utf-8")
                                                    [(, k v) (busline.items)]
                                                    (in k ["shotname" "coord" "linename"]))))
-    (setv stations (list (ap-map (dict-comp k (.decode (cipher.decrypt v) "utf-8" "ignore")
+    (setv stations (list (ap-map (dict-comp k (.decode (cipher.decrypt v) "utf-8" "replace") ; some line can't decode here.
                                             [(, k v) (it.items)])
                                  stations)))
     (assoc busline "stations" stations)

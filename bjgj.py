@@ -123,7 +123,7 @@ class BeijingBusApi(object):
 
         def _hy_anon_fn_22():
             f_1242 = (lambda it: decrypt_bus_realtime_info(it))
-            for v_1241 in etree_xpath_children_to_dict_list(ET.fromstring(self.api_open(u'/bus.php?city=%E5%8C%97%E4%BA%AC&id={0}&no={1}&type={2}&encrypt={3}&versionid=2'.format(id, no, 1L, 1L), u'http://bjgj.aibang.com:8899')), u'//data/bus'):
+            for v_1241 in etree_xpath_children_to_dict_list(ET.fromstring(self.api_open(u'/bus.php?city=%E5%8C%97%E4%BA%AC&id={0}&no={1}&type={2}&encrypt={3}&versionid=2'.format(id, no, 2L, 1L), u'http://bjgj.aibang.com:8899')), u'//data/bus'):
                 yield f_1242(v_1241)
         return list(_hy_anon_fn_22())
 
