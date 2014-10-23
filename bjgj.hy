@@ -4,7 +4,7 @@
 ;;; Created     : Wed Oct 22 20:51:12 2014 by ShuYu Wang
 ;;; Copyright   : Feather Workshop (c) 2014
 ;;; Description : Beijing Realtime Bus
-;;; Time-stamp: <2014-10-23 22:54:12 andelf>
+;;; Time-stamp: <2014-10-23 23:42:06 andelf>
 
 (import urllib2
         hashlib
@@ -106,11 +106,13 @@
    ;; <line><id>621</id><status>0</status><version>16</version></line
    [check-update
     ;; "fetch new line id and version"
-    ;; {'status': '0', 'version': '3', 'id': '141'}
+    ;; {'status': 0, 'version': 3, 'id': 141}
     (fn [self]
-      (-> (self.api-open "/aiguang/bjgj.c?m=checkUpdate&version=2")
+      (->> (self.api-open "/aiguang/bjgj.c?m=checkUpdate&version=1")
           (ET.fromstring)
-          (etree-xpath-children-to-dict-list "//line")))]
+          (xpath-etree-children-to-dict-list "//line")
+          (ap-map (dict-comp k (int v) [(, k v) (.items it)]))
+          (list)))]
    [get-busline-info
     ;; "fetch busline detail info. name, stations, locations."
     (fn [self id &rest ids]
@@ -155,4 +157,5 @@
       (.decrypt "ycCx9MhBlIC3XYEfN4ZZ")
       (print))
   (-> (b.get-busline-realtime-info 87 3)
-      (print)))
+      (print))
+  0)
