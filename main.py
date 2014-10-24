@@ -13,9 +13,10 @@ def main():
     #     line = b.get_busline_info(id['id'])[0]
     #     print line['linename'], line['time'], id['id']
 
-    line = b.get_busline_info(535)[0]
-    print line['linename'], line['time'], line
-    print b.get_busline_realtime_info(535, 23)
+    line_id = 369
+    line = b.get_busline_info(line_id)[0]
+    print line['linename'], line['time']
+    print b.get_busline_realtime_info(line_id, 23)
 
 
 
