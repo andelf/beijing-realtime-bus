@@ -14,6 +14,8 @@
 
 ## API doc
 
+所有座标为高德地图座标。
+
 BeijingBusApi
 
 ```

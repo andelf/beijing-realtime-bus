@@ -4,7 +4,7 @@
 ;;; Created     : Wed Oct 22 20:51:12 2014 by ShuYu Wang
 ;;; Copyright   : Feather Workshop (c) 2014
 ;;; Description : Beijing Realtime Bus
-;;; Time-stamp: <2014-11-01 16:13:07 andelf>
+;;; Time-stamp: <2015-04-16 16:28:41 andelf>
 
 (import urllib2
         hashlib
@@ -155,7 +155,7 @@
       (list)
       (len)
       (print))
-  (-> (b.get-busline-info 457)
+  (-> (b.get-busline-info 805)
       (print))
   ;; test decrypt
   ;; (-> (Cipher.new-from-key 1413772960)
